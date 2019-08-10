@@ -28,7 +28,7 @@ function plotMaps(dp) {
     d3.select("#map").style("width", mapWidth+"px").style("height", mapHeight + "px").style("margin-right", "0px").style("margin-top", timeLabelHeight + "px").style("padding", 0+"px");
 
     gm = new GoogleMap("map");
-    gm.fitBounds(wells, longAccessor, latAccessor);
+
     gm.dispatch.on("draw", draw);
 
     function draw(event) {
@@ -38,6 +38,17 @@ function plotMaps(dp) {
 
     let radiusScale = d3.scaleLinear().domain([1, 19]).range([5, 2]);
     let colorValueScale = d3.scaleLinear().domain([1, 19]).range([1, 0]);
+
+    //Plot some extra controls
+    //create and set the plot well controls
+    let plotControls = createPlotControls();
+    plotControls.index = 3;
+    gm.map.controls[google.maps.ControlPosition.TOP_LEFT].push(plotControls);
+    createColorScale();
+    let timeLabel = createTimeLabel();
+    timeLabel.index = 3;
+    gm.map.controls[google.maps.ControlPosition.TOP_CENTER].push(timeLabel);
+    gm.fitBounds(wells, longAccessor, latAccessor);
 
     function plotWells(event) {
 
@@ -159,16 +170,6 @@ function plotMaps(dp) {
         }
 
     }
-
-    //Plot some extra controls
-    //create and set the plot well controls
-    let plotControls = createPlotControls();
-    plotControls.index = 3;
-    gm.map.controls[google.maps.ControlPosition.TOP_LEFT].push(plotControls);
-    createColorScale();
-    let timeLabel = createTimeLabel();
-    timeLabel.index = 3;
-    gm.map.controls[google.maps.ControlPosition.TOP_CENTER].push(timeLabel);
 }
 
 function colorType(type) {
@@ -401,7 +402,9 @@ function createPlotColorScale(ticks, colorFunction, width, height) {
     svg.attr("id", "colorScaleSvg");
     svg.attr("width", width);
     svg.attr("height", (height + margin.top + margin.bottom));
-
+    svg.append("g").attr("transform", `translate(${width/2}, ${height})`).append("text").text("(feet)")
+        .attr("text-anchor", "middle").attr("alignment-baseline", "hanging")
+        .attr("font-size", 14);
 
     let step = y(ticks[0]) - y(ticks[1]);
     ticks.shift();
@@ -437,5 +440,6 @@ function createPlotColorScale(ticks, colorFunction, width, height) {
 }
 
 function setTimeLabel(str) {
+    str = analyzeValueOptions[analyzeValueIndex] + " in " + str;
     document.getElementById("timeLabel").innerText = str;
 }

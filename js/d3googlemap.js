@@ -36,7 +36,8 @@ class GoogleMap {
      * @param longAccessor
      * @param latAccessor
      */
-    fitBounds(longLat, longAccessor, latAccessor) {
+    fitBounds(longLat0, longAccessor, latAccessor) {
+        let longLat = longLat0.slice();
         if (longAccessor && latAccessor) {
             longLat = longLat.map(d => [longAccessor(d), latAccessor(d)]);
         }

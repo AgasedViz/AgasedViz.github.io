@@ -51,5 +51,5 @@ $(document).ready(() => {
     });
 });
 
-d3.select("#controlPanelContainer").style("left", 1600 + "px").style("top", 80 + "px").style("opacity", 0);//+10 is for the default top margin
+d3.select("#controlPanelContainer").style("left", (mapWidth + 2*marginLeft) + "px").style("top",  "10px").style("opacity", 0);//+10 is for the default top margin
 d3.select("#btnControlPanel").style("top", 0 + "px").style("opacity", "1");

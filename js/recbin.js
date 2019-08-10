@@ -77,7 +77,5 @@ class RecBinner {
         function getGridIndex(value, step) {
             return Math.floor(value / step);
         }
-
-
     }
 }

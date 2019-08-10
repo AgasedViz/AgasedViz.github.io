@@ -1,4 +1,6 @@
-
+let focusCells;
+let colorBarW = 100;
+let colorBarH = 10;
 let nestedByWellTimeStepObjects = new Array(timeStepTypes.length);
 
 function discreteHeatMapPlotter(dp, theDivId, plotOptions) {
@@ -82,6 +84,13 @@ function discreteHeatMapPlotter(dp, theDivId, plotOptions) {
     function generateRows() {
         positiveValueDiffScale = d3.scaleLinear().domain([0, colorRanges[analyzeValueIndex][timeStepTypeIndex][1]]).range([0.05, 1]);
         negativeValueDiffScale = d3.scaleLinear().domain([0, -colorRanges[analyzeValueIndex][timeStepTypeIndex][0]]).range([0.05, 1]);
+        plotHeatmapTitle();
+        if (analyzeValueIndex === 1 || analyzeValueIndex === 2) {
+            plotColorBar(d3.select("#mapHeaderSVG"), colorRanges[analyzeValueIndex][timeStepTypeIndex][0], colorRanges[analyzeValueIndex][timeStepTypeIndex][1], colorBarW, colorBarH);
+        }
+        if (analyzeValueIndex === 0) {
+            plotColorBar0(d3.select("#mapHeaderSVG"), color.waterLevel, colorBarW, colorBarH);
+        }
         let mainGroup = svg.append("g").attr("transform", `translate(0, 0)`);
         for (let row = 0; row < allWellIds.length; row++) {
             let wellId = allWellIds[row];
@@ -258,6 +267,16 @@ function changeAnalyzedValue() {
     //Update cell colors based on the selection.
     positiveValueDiffScale = d3.scaleLinear().domain([0, colorRanges[analyzeValueIndex][timeStepTypeIndex][1]]).range([0.05, 1]);
     negativeValueDiffScale = d3.scaleLinear().domain([0, -colorRanges[analyzeValueIndex][timeStepTypeIndex][0]]).range([0.05, 1]);
+
+    //Updatee heatmap title
+    plotHeatmapTitle();
+    if (analyzeValueIndex === 1 || analyzeValueIndex === 2) {
+        plotColorBar(d3.select("#mapHeaderSVG"), colorRanges[analyzeValueIndex][timeStepTypeIndex][0], colorRanges[analyzeValueIndex][timeStepTypeIndex][1], colorBarW, colorBarH);
+    }
+    if (analyzeValueIndex === 0) {
+        plotColorBar0(d3.select("#mapHeaderSVG"), color.waterLevel, colorBarW, colorBarH);
+    }
+
     let cells = selectAllCells();
     cells.attr("fill", colorType);
     cells.attr("stroke", strokeColor);
@@ -367,7 +386,6 @@ function focusOptionChange() {
     }
 }
 
-let focusCells;
 
 function processFocusSuddenChange(typeColIndex) {
     //Clear previous focus cells
@@ -413,4 +431,89 @@ function setFocusSelection(cellsSelection) {
 function setFadeCells(cellsSelection) {
     cellsSelection.classed("fadeCell", true);
     cellsSelection.classed("focusCell", false);
+}
+
+
+function plotHeatmapTitle(){
+    let theSvg = d3.select("#mapHeaderSVG");
+    let titleG = theSvg.selectAll(".heatmapTitle");
+    if(titleG.empty()){
+        titleG = theSvg.append("g").attr("transform", `translate(0,0)`).attr("class", "heatmapTitle");
+    }
+    titleG.selectAll("*").remove();
+    titleG.append("text").text(analyzeValueOptions[analyzeValueIndex]).attr("dy", "1em");
+}
+
+function plotColorBar0(theSvg, colorScale, width, height) {
+    theSvg.selectAll(".colorBar").remove();
+    let colorBar = theSvg.append("g").attr("transform", "translate(200, 5)").attr("class", "colorBar");
+    colorBar.append("g").attr("transform", `translate(${colorBarW}, ${colorBarH})`).append("text").text("(feet)");
+    const domain = colorScale.domain();
+    const minVal = domain[0];
+    const domainSize = domain[domain.length - 1] - domain[0];
+    const legend = colorBar.append('defs')
+        .append('linearGradient')
+        .attr('id', 'gradient')
+        .attr('x1', '0%') // left
+        .attr('y1', '100%')
+        .attr('x2', '100%') // to right
+        .attr('y2', '100%')
+        .attr('spreadMethod', 'pad');
+    colorScale.domain().forEach((dVal) => {
+        legend.append("stop").attr("offset", Math.round((dVal - minVal) * 100 / domainSize) + "%").attr("stop-color", colorScale(dVal))
+            .attr("stop-opacity", 1);
+    });
+    colorBar.append("g").append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("fill", `url(#gradient)`)
+        .attr("transform", "translate(0,0)");
+
+    let axisG = colorBar.append("g").attr("transform", `translate(0,${height})`);
+    let axisScale = d3.scaleLinear().domain(d3.extent(domain)).range([0, width]);
+    let axisBottom = d3.axisBottom().scale(axisScale).ticks(3);
+    axisG.call(axisBottom);
+}
+function plotColorBar(theSvg, negativeValue, positiveValue, width, height) {
+    theSvg.selectAll(".colorBar").remove();
+    let colorBar = theSvg.append("g").attr("transform", "translate(200, 5)").attr("class", "colorBar");
+    colorBar.append("g").attr("transform", `translate(${colorBarW}, ${colorBarH})`).append("text").text("(feet)");
+    const domain = [negativeValue, 0, positiveValue];
+    const domainSize = domain[domain.length - 1] - domain[0];
+    const legend = colorBar.append('defs')
+        .append('linearGradient')
+        .attr('id', 'gradient')
+        .attr('x1', '0%') // left
+        .attr('y1', '100%')
+        .attr('x2', '100%') // to right
+        .attr('y2', '100%')
+        .attr('spreadMethod', 'pad');
+    //First stop.
+    legend.append("stop").attr("offset", "0%").attr("stop-color", d3.interpolateReds(1.0))
+        .attr("stop-opacity", 1);
+    legend.append("stop").attr("offset", Math.round(-negativeValue*50/(domainSize)) + "%").attr("stop-color", d3.interpolateReds(0.5))
+        .attr("stop-opacity", 1);
+    // //Second stop
+    // legend.append("stop").attr("offset", "49%").attr("stop-color", d3.interpolateReds(0.05))
+    //     .attr("stop-opacity", 1);
+    legend.append("stop").attr("offset", Math.round(-negativeValue*100/(domainSize)) + "%").attr("stop-color", "white")
+        .attr("stop-opacity", 1);
+    // //Second stop
+    // legend.append("stop").attr("offset", "51%").attr("stop-color", d3.interpolateBlues(0.05))
+    //     .attr("stop-opacity", 1);
+    legend.append("stop").attr("offset", Math.round((positiveValue/2-negativeValue)*100/domainSize) + "%").attr("stop-color", d3.interpolateBlues(0.5))
+        .attr("stop-opacity", 1);
+    //Positive stop
+    legend.append("stop").attr("offset", "100%").attr("stop-color", d3.interpolateBlues(1.0))
+        .attr("stop-opacity", 1);
+    colorBar.append("g").append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("fill", `url(#gradient)`)
+        .attr("transform", "translate(0,0)");
+
+    let axisG = colorBar.append("g").attr("transform", `translate(0,${height})`);
+    let axisScale = d3.scaleLinear().domain(d3.extent(domain)).range([0, width]);
+    let axisBottom = d3.axisBottom().scale(axisScale).ticks(5);
+    axisG.call(axisBottom);
 }
