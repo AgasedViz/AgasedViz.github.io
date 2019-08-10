@@ -1,9 +1,8 @@
-let cellWidths = [6, 12],
-    cellHeights = [6, 6];
+
 let nestedByWellTimeStepObjects = new Array(timeStepTypes.length);
 
 function discreteHeatMapPlotter(dp, theDivId, plotOptions) {
-    d3.select("#" + theDivId).style("left", (mapWidth + 2 * marginLeft) + "px").selectAll("*").remove();
+    d3.select("#" + theDivId).style("left", (mapWidth + 2 * marginLeft) + "px").style("height", mapHeight + "px").selectAll("*").remove();
     d3.select(".right1").style("left", (mapWidth + 2 * marginLeft) + "px");
     //Change its position
 

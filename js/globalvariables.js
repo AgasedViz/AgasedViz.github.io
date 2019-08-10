@@ -1,14 +1,4 @@
-let timeLabelHeight = 50;
-let mapWidth = 1600;
-let marginLeft = 10;
-let mapHeight = 1200;
-let dp, //store data processor
-    topRows = 100,
-    sliderTimeInterval = 1000,
-    groupLabelWidth = 80,
-    minCellBorder = 0.4,
-    maxCellBorder = 2,
-    COL_WELL_ID = 'Well_ID',
+let COL_WELL_ID = 'Well_ID',
     COL_LAT = 'y_lat',
     COL_LONG = 'x_long',
     COL_MEASUREMENT_DATE = 'MeasurementDate',
@@ -45,17 +35,31 @@ let dp, //store data processor
     COL_SUDDEN_INCREMENT_D1 = "suddenIncrementD1",
     COL_SUDDEN_INCREMENT_D2 = "suddenIncrementD2",
     COL_SUDDEN_DECREMENT_D1 = "suddenDecrementD1",
-    COL_SUDDEN_DECREMENT_D2 = "suddenDecrementD2",
+    COL_SUDDEN_DECREMENT_D2 = "suddenDecrementD2";
 
+let timeLabelHeight = 50,
+    cellWidths = [6, 12],
+    cellHeights = [6, 6],
+    timeStepTypes = [COL_MONTH_INDEX, COL_YEAR_INDEX],
+    timeStepOptions = ["Month", "Year"],
+    timeStepTypeIndex = 1,
+    marginLeft = 10,
+    wordStreamDiv = 250,
+    mapWidth = window.innerWidth - 360, //360 is for the size of the default discrete heatmap.
+    mapHeight = window.innerHeight - wordStreamDiv - timeLabelHeight;
+
+let
+    dp, //store data processor
+    topRows = 100,
+    sliderTimeInterval = 1000,
+    groupLabelWidth = 80,
+    minCellBorder = 0.4,
+    maxCellBorder = 2,
     suddenChangeTypes = [COL_SUDDEN_INCREMENT, COL_SUDDEN_DECREMENT],
     suddenChangeTypesDates = [[COL_SUDDEN_INCREMENT_D1, COL_SUDDEN_INCREMENT_D2], [COL_SUDDEN_DECREMENT_D1, COL_SUDDEN_DECREMENT_D2]],
     cellStrokeNormalColor = "black",
     cellNormalOpacity = 1.0,
     cellFadeOpacity = 0.2,
-
-    timeStepTypes = [COL_MONTH_INDEX, COL_YEAR_INDEX],
-    timeStepOptions = ["Month", "Year"],
-    timeStepTypeIndex = 1,
 
     analyzeValues = [COL_AVERAGE_OVER_TIME_STEP, COL_AVERAGE_DIFFERENCE_OVER_TIME_STEP, COL_AVERAGE_DIFFERENCE_FROM_PREV_STEP],
     analyzeValueOptions = ["Absolute value", "Difference from average", "Difference from previous step"],

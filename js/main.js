@@ -6,7 +6,6 @@ d3.json("data/wellStatistics.json", function (error, ws) {
         // d3.csv("data/well_data_full.optimized.csv", function (err, data) {
         d3.csv("data/well_data_full.optimized1.csv", function (err, data) {
             // d3.csv("data/SaturatedThickness19952013.csv", function (err, data) {
-
             dp = new dataProcessor(data);
             wells = dp.getWellByTimeSteps[timeStepTypeIndex](0);
             plotMaps(dp);
