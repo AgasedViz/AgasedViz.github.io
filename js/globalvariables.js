@@ -1,9 +1,10 @@
+let timeLabelHeight = 50;
+let mapWidth = 1600;
+let marginLeft = 10;
+let mapHeight = 1200;
 let dp, //store data processor
     topRows = 100,
-    mapWidth = 800,
-    mapHeight = 1200,
     sliderTimeInterval = 1000,
-    timeLabelHeight = 50,
     groupLabelWidth = 80,
     minCellBorder = 0.4,
     maxCellBorder = 2,
@@ -68,7 +69,7 @@ let dp, //store data processor
     averageValueThresholds = [10e-6, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1500],
     groupByGroups = [groupByCounty, groupByWellAlphabetical, groupByWellNumberOfSamples, groupBySuddenIncrement, groupBySuddenDecrement, groupByStandardDeviation, groupByOverallReduction, groupByMinDifferenceFromPrevStep, groupByOverallAverage],
     groupOptions = ["County", "Well alphabetical", "Well number of samples", "Sudden increment", "Sudden decrement", "Standard deviation", "Overall reduction", "Min Diff from Prev Step", "Overall average"],
-    groupSortOptions = [["Alphabetical", "Number of wells", "Overall reduction", "Thickness (ascending)", "Thickness (descending)"], ["Ascending", "Descending"], ["Ascending", "Descending"],["Ascending", "Descending"], ["Ascending", "Descending"], ["Ascending", "Descending"], ["Ascending", "Descending"], ["Ascending", "Descending"]],
+    groupSortOptions = [["Alphabetical", "Number of wells", "Overall reduction", "Thickness (ascending)", "Thickness (descending)"], ["Ascending", "Descending"], ["Ascending", "Descending"], ["Ascending", "Descending"], ["Ascending", "Descending"], ["Ascending", "Descending"], ["Ascending", "Descending"], ["Ascending", "Descending"]],
     countySortFunctions = [sortCountiesAlphabetically, sortCountiesByNumberOfWells, sortCountiesByOverallReduction, sortCountiesBySaturatedThickness(true), sortCountiesBySaturatedThickness(false)],
     statisticSortFunctions = [ascendingOrder, descendingOrder],
     groupSortFunctions = [countySortFunctions, statisticSortFunctions, statisticSortFunctions, statisticSortFunctions, statisticSortFunctions, statisticSortFunctions, statisticSortFunctions, statisticSortFunctions, statisticSortFunctions],
@@ -89,6 +90,7 @@ let dp, //store data processor
     isGroupedByCounty = false,
     us,
     wellStatistics;
+
 function ascendingOrder(a, b) {
     return a.key - b.key;
 }
@@ -105,11 +107,11 @@ function groupBySuddenIncrement(well) {
     return dp.wellStatistics[well[COL_WELL_ID]][COL_SUDDEN_INCREMENT_GROUP];
 }
 
-function groupByWellAlphabetical(well){
+function groupByWellAlphabetical(well) {
     return dp.wellStatistics[well[COL_WELL_ID]][COL_WELL_ALPHABETICAL_GROUP];
 }
 
-function groupByWellNumberOfSamples(well){
+function groupByWellNumberOfSamples(well) {
     return dp.wellStatistics[well[COL_WELL_ID]][COL_WELL_NUM_SAMPLES_GROUP];
 }
 
@@ -130,9 +132,9 @@ function groupByOverallAverage(well) {
 }
 
 function groupByMinDifferenceFromPrevStep(well) {
-    if(timeStepTypeIndex==0){
+    if (timeStepTypeIndex == 0) {
         return dp.wellStatistics[well[COL_WELL_ID]][COL_MIN_AVERAGE_DIFFERENCE_FROM_PREV_MONTH_GROUP];
-    }else{
+    } else {
         return dp.wellStatistics[well[COL_WELL_ID]][COL_MIN_AVERAGE_DIFFERENCE_FROM_PREV_YEAR_GROUP];
     }
 
@@ -175,12 +177,12 @@ function sortWellsByNumberOfSamples(a, b) {
 function sortWellsBySuddenIncrement(a, b) {
     let akey = a.key;
     //If the wellId contains $ and _, it means it was the combination of wellID + month, we split and take only well ID
-    if(akey.indexOf('$')>=0){
+    if (akey.indexOf('$') >= 0) {
         akey = akey.replace('$', '').split('_')[0];
     }
     let bkey = b.key;
     //If the wellId contains $ and _, it means it was the combination of wellID + month, we split and take only well ID
-    if(bkey.indexOf('$')>=0){
+    if (bkey.indexOf('$') >= 0) {
         bkey = bkey.replace('$', '').split('_')[0];
     }
     return dp.wellStatistics[bkey][COL_SUDDEN_INCREMENT] - dp.wellStatistics[akey][COL_SUDDEN_INCREMENT];
@@ -189,12 +191,12 @@ function sortWellsBySuddenIncrement(a, b) {
 function sortWellsBySuddenDecrement(a, b) {
     let akey = a.key;
     //If the wellId contains $ and _, it means it was the combination of wellID + month, we split and take only well ID
-    if(akey.indexOf('$')>=0){
+    if (akey.indexOf('$') >= 0) {
         akey = akey.replace('$', '').split('_')[0];
     }
     let bkey = b.key;
     //If the wellId contains $ and _, it means it was the combination of wellID + month, we split and take only well ID
-    if(bkey.indexOf('$')>=0){
+    if (bkey.indexOf('$') >= 0) {
         bkey = bkey.replace('$', '').split('_')[0];
     }
     return dp.wellStatistics[akey][COL_SUDDEN_DECREMENT] - dp.wellStatistics[bkey][COL_SUDDEN_DECREMENT];
@@ -203,12 +205,12 @@ function sortWellsBySuddenDecrement(a, b) {
 function sortWellsByStandardDeviation(a, b) {
     let akey = a.key;
     //If the wellId contains $ and _, it means it was the combination of wellID + month, we split and take only well ID
-    if(akey.indexOf('$')>=0){
+    if (akey.indexOf('$') >= 0) {
         akey = akey.replace('$', '').split('_')[0];
     }
     let bkey = b.key;
     //If the wellId contains $ and _, it means it was the combination of wellID + month, we split and take only well ID
-    if(bkey.indexOf('$')>=0){
+    if (bkey.indexOf('$') >= 0) {
         bkey = bkey.replace('$', '').split('_')[0];
     }
     return dp.wellStatistics[bkey][COL_STANDARD_DEVIATION] - dp.wellStatistics[akey][COL_STANDARD_DEVIATION];
@@ -217,12 +219,12 @@ function sortWellsByStandardDeviation(a, b) {
 function sortWellsByOverallReduction(a, b) {
     let akey = a.key;
     //If the wellId contains $ and _, it means it was the combination of wellID + month, we split and take only well ID
-    if(akey.indexOf('$')>=0){
+    if (akey.indexOf('$') >= 0) {
         akey = akey.replace('$', '').split('_')[0];
     }
     let bkey = b.key;
     //If the wellId contains $ and _, it means it was the combination of wellID + month, we split and take only well ID
-    if(bkey.indexOf('$')>=0){
+    if (bkey.indexOf('$') >= 0) {
         bkey = bkey.replace('$', '').split('_')[0];
     }
     return dp.wellStatistics[bkey][COL_OVERALL_REDUCTION] - dp.wellStatistics[akey][COL_OVERALL_REDUCTION];
@@ -231,20 +233,20 @@ function sortWellsByOverallReduction(a, b) {
 function sortWellsByOverallDifference(a, b) {
     let akey = a.key;
     //If the wellId contains $ and _, it means it was the combination of wellID + month, we split and take only well ID
-    if(akey.indexOf('$')>=0){
+    if (akey.indexOf('$') >= 0) {
         akey = akey.replace('$', '').split('_')[0];
     }
     let bkey = b.key;
     //If the wellId contains $ and _, it means it was the combination of wellID + month, we split and take only well ID
-    if(bkey.indexOf('$')>=0){
+    if (bkey.indexOf('$') >= 0) {
         bkey = bkey.replace('$', '').split('_')[0];
     }
-    let aDiff = (timeStepTypeIndex==0)?dp.wellStatistics[akey][COL_MIN_AVERAGE_DIFFERENCE_FROM_PREV_MONTH]:dp.wellStatistics[akey][COL_MIN_AVERAGE_DIFFERENCE_FROM_PREV_YEAR];
-    let bDiff = (timeStepTypeIndex==0)?dp.wellStatistics[bkey][COL_MIN_AVERAGE_DIFFERENCE_FROM_PREV_MONTH]:dp.wellStatistics[bkey][COL_MIN_AVERAGE_DIFFERENCE_FROM_PREV_YEAR];
-    if(typeof aDiff==="undefined"){
+    let aDiff = (timeStepTypeIndex == 0) ? dp.wellStatistics[akey][COL_MIN_AVERAGE_DIFFERENCE_FROM_PREV_MONTH] : dp.wellStatistics[akey][COL_MIN_AVERAGE_DIFFERENCE_FROM_PREV_YEAR];
+    let bDiff = (timeStepTypeIndex == 0) ? dp.wellStatistics[bkey][COL_MIN_AVERAGE_DIFFERENCE_FROM_PREV_MONTH] : dp.wellStatistics[bkey][COL_MIN_AVERAGE_DIFFERENCE_FROM_PREV_YEAR];
+    if (typeof aDiff === "undefined") {
         return 1;
     }
-    if(typeof bDiff=="undefined"){
+    if (typeof bDiff == "undefined") {
         return -1;
     }
     return aDiff - bDiff;
@@ -255,12 +257,12 @@ function sortWellsByAverageThickness(ascending) {
     return function (a, b) {
         let akey = a.key;
         //If the wellId contains $ and _, it means it was the combination of wellID + month, we split and take only well ID
-        if(akey.indexOf('$')>=0){
+        if (akey.indexOf('$') >= 0) {
             akey = akey.replace('$', '').split('_')[0];
         }
         let bkey = b.key;
         //If the wellId contains $ and _, it means it was the combination of wellID + month, we split and take only well ID
-        if(bkey.indexOf('$')>=0){
+        if (bkey.indexOf('$') >= 0) {
             bkey = bkey.replace('$', '').split('_')[0];
         }
         let aAverageThickness = dp.wellStatistics[akey][COL_OVERALL_AVERAGE];

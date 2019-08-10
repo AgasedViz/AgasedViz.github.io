@@ -2,6 +2,7 @@ let gm;
 let positiveValueDiffScale;
 let negativeValueDiffScale;
 let heatheatmapmap;
+
 function createColorScale() {
     let thresholds = processThresholds1(colorRanges[analyzeValueIndex][timeStepTypeIndex]);
     let colorScaleControl = createPlotColorScale(thresholds, colorType("negative"), 70, 400);
@@ -23,6 +24,9 @@ function plotMaps(dp) {
     let latAccessor = (d) => {
         return d[COL_LAT];
     }
+    //Set the map size.
+    d3.select("#map").style("width", mapWidth+"px").style("height", mapHeight + "px").style("margin-right", "0px").style("margin-top", timeLabelHeight + "px").style("padding", 0+"px");
+
     gm = new GoogleMap("map");
     gm.fitBounds(wells, longAccessor, latAccessor);
     gm.dispatch.on("draw", draw);
@@ -97,7 +101,8 @@ function plotMaps(dp) {
         });
         return wells;
     }
-    function plotContours(event){
+
+    function plotContours(event) {
         positiveValueDiffScale = d3.scaleLinear().domain([0, colorRanges[analyzeValueIndex][timeStepTypeIndex][1]]).range([0.05, 1]);
         negativeValueDiffScale = d3.scaleLinear().domain([0, -colorRanges[analyzeValueIndex][timeStepTypeIndex][0]]).range([0.05, 1]);
 
@@ -170,7 +175,7 @@ function colorType(type) {
     return function (d) {
         if (analyzeValueIndex === 0) {
             return color.waterLevel(d.value);
-        }else {
+        } else {
             if (type == "negative") {
                 return d3.interpolateReds(negativeValueDiffScale(d.value));
             }
@@ -192,7 +197,7 @@ function plotCounties() {
             type: "GeometryCollection"
         };
         // ctPath.geometries = us.objects.cb_2015_texas_county_20m.geometries;//.filter(d=>d.properties.NAME.toLowerCase()===county.toLowerCase());
-        ctPath.geometries = us.objects.cb_2015_texas_county_20m.geometries.filter(d=>dp.allCounties.indexOf(d.properties.NAME.toLowerCase())>=0);
+        ctPath.geometries = us.objects.cb_2015_texas_county_20m.geometries.filter(d => dp.allCounties.indexOf(d.properties.NAME.toLowerCase()) >= 0);
         geoJsonObject = topojson.feature(us, ctPath)
 
         gm.map.data.addGeoJson(geoJsonObject);
@@ -226,13 +231,12 @@ function plotContoursFromData(group, grid, colorFunction) {
     //     });
     //     return result;
     // }
+    let path = d3.geoPath().projection(scale(grid.scale, grid.scale));
     g.selectAll("path")
         .data(contourData)
         .enter().append("path")
         .attr("d", d => {
-            let path = d3.geoPath(d3.geoIdentity().scale(grid.scale))(d);
-            // return smoothPath(path);
-            return path;
+            return path(d);
         })
         .attr("fill", colorFunction)
         .attr("stroke", "#000")
@@ -240,6 +244,14 @@ function plotContoursFromData(group, grid, colorFunction) {
         .attr("class", "marker")
         .attr("opacity", contourOpacity)
         .attr("stroke-linejoin", "round");
+
+    function scale(scaleX, scaleY) {
+        return d3.geoTransform({
+            point: function (x, y) {
+                this.stream.point(x * scaleX, y * scaleY);
+            }
+        });
+    }
 }
 
 
@@ -281,7 +293,7 @@ function plotContoursOptionChange() {
     gm.updateMap();
 }
 
-function createTimeLabel(){
+function createTimeLabel() {
     let controlDiv = document.createElement('div');
     controlDiv.style.marginLeft = '-10px';
     // Set CSS for the control border.
@@ -404,8 +416,7 @@ function createPlotColorScale(ticks, colorFunction, width, height) {
         .attr("fill", d => {
             if (analyzeValueIndex === 0) {
                 return color.waterLevel(d.value);
-            }
-            else {
+            } else {
                 if (d.value < 0) {
                     return d3.interpolateReds(negativeValueDiffScale(-d.value));
                 }
@@ -425,6 +436,6 @@ function createPlotColorScale(ticks, colorFunction, width, height) {
     return controlDiv;
 }
 
-function setTimeLabel(str){
+function setTimeLabel(str) {
     document.getElementById("timeLabel").innerText = str;
 }

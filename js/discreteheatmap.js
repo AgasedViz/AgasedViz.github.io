@@ -3,7 +3,10 @@ let cellWidths = [6, 12],
 let nestedByWellTimeStepObjects = new Array(timeStepTypes.length);
 
 function discreteHeatMapPlotter(dp, theDivId, plotOptions) {
-    d3.select("#" + theDivId).selectAll("*").remove();
+    d3.select("#" + theDivId).style("left", (mapWidth + 2 * marginLeft) + "px").selectAll("*").remove();
+    d3.select(".right1").style("left", (mapWidth + 2 * marginLeft) + "px");
+    //Change its position
+
     let labelsGroup;
     //Process the group position.
     let cellWidth = cellWidths[timeStepTypeIndex];
@@ -29,6 +32,7 @@ function discreteHeatMapPlotter(dp, theDivId, plotOptions) {
     let width = steps * cellWidth;
     let rows = {};
     let svg = d3.select("#" + theDivId).append("svg").attr("width", width + groupLabelWidth).attr("height", allWellIds.length * cellHeight).attr("overflow", "scroll");
+
     //<editor-fold desc="utils">
     function processRowPositions() {
         rowPositions = {};
@@ -128,12 +132,12 @@ function discreteHeatMapPlotter(dp, theDivId, plotOptions) {
                                 });
                                 //Slide the play slider to corresponding location.
                                 let theDate = d.values[0][COL_MEASUREMENT_DATE];
-                                if(timeStepTypeIndex==1){//analyzed by year => fall semester need to add one to the year (move to next year)
+                                if (timeStepTypeIndex == 1) {//analyzed by year => fall semester need to add one to the year (move to next year)
                                     //Cannot take the first one, since the first one may be the year from previous fall (means previous year)
                                     let month = theDate.getMonth();
                                     let year = theDate.getFullYear();
-                                    if(month>=9){//october or upper add one to the year
-                                        year = year+1;
+                                    if (month >= 9) {//october or upper add one to the year
+                                        year = year + 1;
                                     }
                                     theDate = new Date(year, 5, 15);
                                     //Set at the middle of the month
@@ -153,8 +157,7 @@ function discreteHeatMapPlotter(dp, theDivId, plotOptions) {
         function colorType(d) {
             if (analyzeValueIndex === 0) {
                 return color.waterLevel(d.value);
-            }
-            else {
+            } else {
                 if (typeof d.value === "undefined") {
                     return "white";
                 }
@@ -224,6 +227,7 @@ function discreteHeatMapPlotter(dp, theDivId, plotOptions) {
 
         lgs.exit().remove();
     }
+
     //</editor-fold>
     //<editor-fold desc="Exposing necessary components">
     this.plot = plot;
