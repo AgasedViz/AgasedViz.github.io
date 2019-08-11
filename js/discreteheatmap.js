@@ -447,7 +447,7 @@ function plotHeatmapTitle(){
 function plotColorBar0(theSvg, colorScale, width, height) {
     theSvg.selectAll(".colorBar").remove();
     let colorBar = theSvg.append("g").attr("transform", "translate(200, 5)").attr("class", "colorBar");
-    colorBar.append("g").attr("transform", `translate(${colorBarW}, ${colorBarH})`).append("text").text("(feet)");
+    colorBar.append("g").attr("transform", `translate(${colorBarW + 4}, ${colorBarH})`).append("text").text("(feet)");
     const domain = colorScale.domain();
     const minVal = domain[0];
     const domainSize = domain[domain.length - 1] - domain[0];
@@ -477,7 +477,7 @@ function plotColorBar0(theSvg, colorScale, width, height) {
 function plotColorBar(theSvg, negativeValue, positiveValue, width, height) {
     theSvg.selectAll(".colorBar").remove();
     let colorBar = theSvg.append("g").attr("transform", "translate(200, 5)").attr("class", "colorBar");
-    colorBar.append("g").attr("transform", `translate(${colorBarW}, ${colorBarH})`).append("text").text("(feet)");
+    colorBar.append("g").attr("transform", `translate(${colorBarW + 4}, ${colorBarH})`).append("text").text("(feet)");
     const domain = [negativeValue, 0, positiveValue];
     const domainSize = domain[domain.length - 1] - domain[0];
     const legend = colorBar.append('defs')
